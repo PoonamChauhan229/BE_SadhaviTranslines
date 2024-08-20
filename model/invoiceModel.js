@@ -60,6 +60,14 @@ const invoiceSchema = new mongoose.Schema({
     weight: {
         type: String,
         required: true
+    },
+    downloadPath: {
+        type: String,
+        required: false
+    },
+    fileName: {
+        type: String,
+        required: false
     }
 });
 
