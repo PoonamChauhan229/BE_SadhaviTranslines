@@ -68,6 +68,14 @@ const invoiceSchema = new mongoose.Schema({
     fileName: {
         type: String,
         required: false
+    },
+    status:{
+        type:String,
+        default:"unpaid"
+    },
+    clientName:{
+        type:String,
+        // required:true
     }
 });
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = new express.Router();
 const Invoice = require('../model/invoiceModel');
+const Client=require('../model/clientsModel')
 const PizZip = require('pizzip');
 const Docxtemplater = require('docxtemplater');
 const fs = require('fs');
@@ -66,6 +67,19 @@ router.post('/addinvoice', async (req, res) => {
     // Update the invoice with the download path
     newInvoice.downloadPath = `/download/${newInvoice._id}`;
     
+    // newInvoice.address
+    const clientAddress=await Client.find({},{name:1,_id:0})
+    const AllClients=clientAddress.map((element)=>element.name.toLowerCase())
+    console.log(AllClients)
+
+    console.log((newInvoice.address.substring(0,5).toLowerCase()))
+
+    let clientName=AllClients.filter(
+      (element=>element.includes(newInvoice.address.substring(0,5).toLowerCase())))
+
+    newInvoice.clientName=clientName[0].split(" ").map((element)=>element.charAt(0).toUpperCase() + element.substring(1).toLowerCase()).join(" ")
+    console.log(newInvoice.clientName)
+    
     // Format the date for the file name
     const formattedDate = formatDate(date_lr);
     console.log("Formatted Date:", formattedDate);
@@ -121,21 +135,21 @@ router.get('/download/:id', async (req, res) => {
 // Route to view all invoices
 router.get('/viewinvoices', async (req, res) => {
   try {
-    const viewinvoices = await Invoice.find();
-    res.status(200).send(viewinvoices);
+    const viewinvoices = await Invoice.find();    
+    res.status(200).send(viewinvoices)
   } catch (e) {
     res.status(400).send({ message: e.message });
   }
 });
 
-//fetch with Id
-// router.get('/viewinvoices/:id', async (req, res) => {
-//   try {
-//     const invoice = await Invoice.find({_id:req.params.id});
-//     res.status(200).send(invoice);
-//   } catch (e) {
-//     res.status(400).send({ message: e.message });
-//   }
-// });
+// fetch with Id
+router.get('/editinvoice/:id', async (req, res) => {
+  try {
+    const invoice = await Invoice.find({_id:req.params.id});
+    res.status(200).send(invoice);
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
 
 module.exports = router;
